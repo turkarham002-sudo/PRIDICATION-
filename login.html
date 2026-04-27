@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SURESHOT X</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background: radial-gradient(circle at top, #1a0000, #000);
+    overflow:hidden;
+}
+
+/* glowing background */
+body::before{
+    content:'';
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:#ff0000;
+    filter:blur(200px);
+    opacity:0.25;
+    animation:float 6s infinite ease-in-out;
+}
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-60px)}
+}
+
+/* BIG PREMIUM TITLE */
+.brand{
+    font-family:'Orbitron',sans-serif;
+    font-size:32px;
+    font-weight:900;
+    color:#ff1a1a;
+    text-align:center;
+    margin-bottom:25px;
+    letter-spacing:3px;
+    text-shadow:
+        0 0 10px red,
+        0 0 25px #ff0000,
+        0 0 40px #990000;
+    animation:glow 2s infinite alternate;
+}
+@keyframes glow{
+    from{ text-shadow:0 0 5px red; }
+    to{ text-shadow:0 0 30px #ff0000; }
+}
+
+/* CARD */
+.card{
+    width:320px;
+    padding:30px;
+    border-radius:25px;
+    background:rgba(255,255,255,0.04);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,0,0,0.5);
+    box-shadow:0 0 40px rgba(255,0,0,0.2);
+    text-align:center;
+    animation:fadeIn 0.6s ease;
+}
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(40px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* INPUT */
+.input{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#0d0d0d;
+    color:#fff;
+    margin-top:10px;
+    font-family:'Rajdhani',sans-serif;
+    font-size:16px;
+    border:1px solid #222;
+}
+.input:focus{
+    outline:none;
+    border:1px solid red;
+    box-shadow:0 0 12px red;
+}
+
+/* BUTTON */
+.btn{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#ff0000,#800000);
+    color:#fff;
+    font-weight:700;
+    font-family:'Rajdhani',sans-serif;
+    letter-spacing:1px;
+    cursor:pointer;
+    transition:0.2s;
+}
+.btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 20px red;
+}
+
+/* BUY BUTTON */
+.buy-btn{
+    width:100%;
+    padding:13px;
+    margin-top:10px;
+    border:none;
+    border-radius:12px;
+    background:#1a1a1a;
+    color:#fff;
+    font-family:'Rajdhani',sans-serif;
+    cursor:pointer;
+    transition:0.2s;
+}
+.buy-btn:hover{
+    background:linear-gradient(90deg,#ff0000,#800000);
+    box-shadow:0 0 15px red;
+}
+
+/* MESSAGE */
+.msg{
+    margin-top:12px;
+    font-size:14px;
+    color:#ff4d4d;
+    min-height:20px;
+}
+
+/* FOOTER */
+.footer{
+    position:absolute;
+    bottom:15px;
+    font-family:'Orbitron',sans-serif;
+    font-size:14px;
+    color:#ff4d4d;
+    letter-spacing:2px;
+    text-shadow:0 0 10px red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="brand">SURESHOT X MANAGER</div>
+
+<div class="card">
+
+<input id="key" class="input" placeholder="ENTER ACCESS KEY">
+
+<button class="btn" onclick="login()">UNLOCK SYSTEM</button>
+
+<button class="buy-btn" onclick="buySystem()">💰 BUY ACCESS</button>
+
+<div class="msg" id="msg"></div>
+
+</div>
+
+<div class="footer">SURESHOT X MANAGER</div>
+
+<script>
+
+// FIREBASE CONFIG
+const firebaseConfig = {
+ apiKey: "AIzaSyDodLrqPIacmAUorWCuRmcMxjB0kqpZNxQ",
+ databaseURL: "https://tournament-z-default-rtdb.firebaseio.com
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// LOGIN
+async function login(){
+let key = document.getElementById("key").value;
+let msg = document.getElementById("msg");
+
+if(!key){
+    msg.innerText="ENTER KEY ❗";
+    return;
+}
+
+let snap = await db.ref("keys/"+key).once("value");
+
+if(!snap.exists()){
+    msg.innerText="INVALID KEY ❌";
+    return;
+}
+
+let data = snap.val();
+
+if(Date.now() > data.expiry){
+    msg.innerText="KEY EXPIRED ⏳";
+    return;
+}
+
+localStorage.setItem("user_key",key);
+
+msg.style.color="#00ff88";
+msg.innerText="ACCESS GRANTED 🔥";
+
+setTimeout(()=>{
+    window.location.href="index.html";
+},800);
+}
+
+// BUY BUTTON
+function buySystem(){
+    window.open(
+        "https://t.me/YOUR_USERNAME?text=🔥%20I%20want%20to%20buy%20your%20VIP%20system",
+        "_blank"
+    );
+}
+
+</script>
+
+</body>
+</html>
